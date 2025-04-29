@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:todo_app/bussiness_logic/cubit/taskmodel_cubit.dart';
 import 'package:todo_app/widgets/edit_task.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: HydratedStorageDirectory(
+      (await getTemporaryDirectory()).path,
+    ),
+  );
   runApp(
-    BlocProvider(create: (context) => TaskmodelCubit(), child: const MyApp()),
+    BlocProvider(create: (context) => TaskmodelCubit(), child: SimpleToDoApp()),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class SimpleToDoApp extends StatelessWidget {
+  const SimpleToDoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +81,7 @@ class _ToDoSimpleUIState extends State<ToDoSimpleUI> {
                         leading: Checkbox(
                           value: state.tasks[index].isCompleted,
                           onChanged: (_) {
-                            context.read<TaskmodelCubit>().toogleTask(
+                            context.read<TaskmodelCubit>().toggleTask(
                               state.tasks[index].id,
                             );
                           },
